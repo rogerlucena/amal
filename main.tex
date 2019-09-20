@@ -1,0 +1,99 @@
+% --------------------------------------------------------------
+%                         Template
+% --------------------------------------------------------------
+
+\documentclass[10pt]{article} %draft = show box warnings
+\usepackage[a4paper, total={6.5in,10.2in}]{geometry} % Flexible and complete interface to document dimensions
+\usepackage[utf8]{inputenc} % Accept different input encodings [utf8]
+\usepackage[T1]{fontenc}    % Standard package for selecting font encodings
+\usepackage{lmodern} % Good looking T1 font\usepackage{tikz}
+
+
+% --------------------------------------------------------------
+%                       Packages
+% --------------------------------------------------------------
+\usepackage{float} % Improved interface for floating objects
+\usepackage{amsmath,amsthm,amssymb} % American Mathematics Society facilities
+\usepackage[linktoc=all]{hyperref} % create hyperlinks
+\usepackage{graphicx,booktabs,array}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{algorithmicx}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage[framemethod=TikZ]{mdframed}
+\usepackage{epstopdf}
+% --------------------------------------------------------------
+%                       Exercise Env
+% --------------------------------------------------------------
+
+\newtheoremstyle{question-style}% name of the style to be used
+  {20pt}% measure of space to leave above the theorem. E.g.: 3pt
+  {3pt}% measure of space to leave below the theorem. E.g.: 3pt
+  {}% name of font to use in the body of the theorem
+  {}% measure of space to indent
+  {}% name of head font
+  {}% punctuation between head and body
+  { }% space after theorem head; " " = normal interword space
+  {\bfseries Question \thmnumber{#2}.}% Manually specify head
+  
+\theoremstyle{question-style}
+\newtheorem{answer}{\arabic{answer}}
+
+% --------------------------------------------------------------
+%                       Document
+% --------------------------------------------------------------
+\begin{document}
+% --------------------------------------------------------------
+%                       Header
+% --------------------------------------------------------------
+\noindent
+\normalsize\textbf{Advanced MAchine Learning \& Deep Learning} \hfill \textbf{UPMC}\\
+\normalsize\textbf{AMAL} \hfill \textbf{\today}
+\flushright{\small Roger Leite Lucena -- \texttt{rogerleitelucena@gmail.com} }
+
+{\small Alexandre Ribeiro João Macedo --  \texttt{arj.macedo@gmail.com}}\vspace{20pt}
+\centerline{\Large \textbf{TD 1 - Définition de fonctions en pyTorch}}
+\vspace{20pt}
+
+% --------------------------------------------------------------
+%                       Answers
+% --------------------------------------------------------------
+
+\begin{answer} % Question 1
+\begin{flalign*}
+    && \frac{\partial L_h \circ h}{\partial x_k}(x) = \sum_{i=1}^{p} \frac{\partial L_h }{\partial y_i}\left(h(x)\right) \frac{\partial h_i}{\partial x_k}(x) && \text{(chain rule)}
+\end{flalign*}
+\end{answer}
+
+\begin{answer} \leavevmode% Question 2
+
+\begin{itemize}
+    \item \begin{align*}
+        \frac{\partial g \circ \text{mse}}{\partial \textbf{y}}(\textbf{y})
+    \end{align*}
+\end{itemize}
+
+\begin{itemize}
+    \item \begin{align*}
+            \frac{\partial g \circ \text{mse} \circ f}{\partial \mathbf{x_i}}(\mathbf{x}, \mathbf{w}, b)
+    \end{align*}
+\end{itemize}
+
+\begin{itemize}
+    \item \begin{align*}
+        \frac{\partial g \circ \text{mse} \circ f}{\partial \mathbf{w_i}}(\mathbf{x}, \mathbf{w}, b)
+    \end{align*}
+\end{itemize}
+
+\begin{itemize}
+    \item \begin{align*}
+        \frac{\partial g \circ \text{mse} \circ f}{\partial b}(\mathbf{x}, \mathbf{w}, b)
+    \end{align*}
+\end{itemize}
+
+\end{answer} 
+
+
+\end{document}
