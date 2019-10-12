@@ -1,0 +1,193 @@
+% --------------------------------------------------------------
+%                         Template
+% --------------------------------------------------------------
+
+\documentclass[10pt]{article} %draft = show box warnings
+\usepackage[a4paper, total={6.5in,10.2in}]{geometry} % Flexible and complete interface to document dimensions
+\usepackage[utf8]{inputenc} % Accept different input encodings [utf8]
+\usepackage[T1]{fontenc}    % Standard package for selecting font encodings
+\usepackage{lmodern} % Good looking T1 font\usepackage{tikz}
+
+
+% --------------------------------------------------------------
+%                       Packages
+% --------------------------------------------------------------
+\usepackage{float} % Improved interface for floating objects
+\usepackage{amsmath,amsthm,amssymb} % American Mathematics Society facilities
+\usepackage[linktoc=all]{hyperref} % create hyperlinks
+\usepackage{graphicx,booktabs,array}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{algorithmicx}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage[framemethod=TikZ]{mdframed}
+\usepackage{epstopdf}
+% --------------------------------------------------------------
+%                       Exercise Env
+% --------------------------------------------------------------
+
+\newtheoremstyle{question-style}% name of the style to be used
+  {20pt}% measure of space to leave above the theorem. E.g.: 3pt
+  {3pt}% measure of space to leave below the theorem. E.g.: 3pt
+  {}% name of font to use in the body of the theorem
+  {}% measure of space to indent
+  {}% name of head font
+  {}% punctuation between head and body
+  { }% space after theorem head; " " = normal interword space
+  {\bfseries Question \thmnumber{#2}.}% Manually specify head
+  
+\theoremstyle{question-style}
+\newtheorem{answer}{\arabic{answer}}
+
+% --------------------------------------------------------------
+%                       Document
+% --------------------------------------------------------------
+\begin{document}
+\date{August 2018}
+% --------------------------------------------------------------
+%                       Header
+% --------------------------------------------------------------
+\noindent
+\normalsize\textbf{Advanced MAchine Learning \& Deep Learning} \hfill \textbf{UPMC}\\
+\normalsize\textbf{AMAL} \hfill \textbf{October 2019}
+\flushright{\small Roger Leite Lucena -- \texttt{rogerleitelucena@gmail.com} }
+
+{\small Alexandre Ribeiro João Macedo --  \texttt{arj.macedo@gmail.com}}\vspace{20pt}
+\centerline{\Large \textbf{Paper Summary - Gradient Descent Optimization Algorithms}}
+\vspace{10pt}
+
+\begin{flushleft}
+
+Original paper: \href{http://ruder.io/optimizing-gradient-descent/}{http://ruder.io/optimizing-gradient-descent/}
+
+\section{Batch Gradient Descent}
+
+Batch Gradient Descent uses the entire dataset when updating the parameters of our model:
+\begin{align*}
+    \theta := \theta - \eta \cdot \nabla_{\theta}J(\theta)    
+\end{align*}
+
+- \textbf{Positive} sides: guaranteed to converge to the global minimum for convex error surfaces and to a local minimum for non-convex surfaces. \\
+
+- \textbf{Negative} sides: can be very slow; intractable for datasets that don't fit in memory and it does not allow online learning (receiving new examples on-the-fly).
+
+
+\section{Stochastic gradient descent - SGD}
+The SGD performs a parameter update for each pair of training example and label $x^{(i)},y^{(i)} $ . This update is done one at a time to avoid redundant computations as in batch gradient descent. It can be written as:
+
+\begin{align*}
+    \theta := \theta - \eta \cdot \nabla_{\theta} J \left( \theta; x^{(i)};y^{(i)} \right)
+\end{align*}
+
+Due to its nature, SGD has a high fluctuation. As a consequence, it can jumps to a new potentially better local minima. However, this will also contribute negatively to the convergence to an exact minima as the SDG can keep overshooting. Nevertheless, if we slowly decrease the learning rate, SGD shows the same convergence behaviour as batch gradient descent. 
+
+- \textbf{Positive} :  can jump quickly to a local minima.\\
+
+- \textbf{Negative} : hard convergence to exact minima as it keeps overshooting.
+
+\section{Adagrad}
+
+It would be interesting to perform smaller updates for parameters associated with frequently occurring features, and larger updates for parameters associated with infrequent features.
+
+Defining $g_{t, i}$ the partial derivative of the objective function w.r.t. $\theta_i$ at time step $t$: 
+
+\begin{align*}
+    g_{t, i} = \nabla_{\theta_{t,i}}J(\theta_{t, i}) 
+\end{align*}
+
+We define $g$ a $d$-dimensional vector (same dimension as $\theta$). Being $\odot$ the matrix vector product we have:  
+
+\begin{align} \label{adagrad}
+    \theta_{t+1} = \theta_t - \dfrac{\eta}{\sqrt{G_t} + \epsilon} \odot g_t
+\end{align}
+
+
+Where $G_t$ is the $ \mathbb{R}^{d \times d}$ diagonal matrix on which each diagonal element at the position $(i, i)$ is the sum of the squares of the gradients w.r.t. $\theta_i$ up to time $t$.
+
+- \textbf{Positive} sides: different learning rate for every parameter $\theta_i$ at each time step $t$; eliminates the need to manually tune the learning rate; well-suited for dealing with sparse data.\\
+
+- \textbf{Negative} sides: accumulation of the squared gradients in the denominator - the learning rate may eventually become infinitesimally small (learning nothing anymore).
+
+Applications: used for recognizing cats in Youtube videos at Google and for training GloVe word embeddings (as infrequent words require much larger updates than frequent ones).
+
+
+\section{Adadelta}
+Adadelta is an extension of Adagrad that aims to reduce the aggressive, monotonically, decreasing learning rate. The idea is to accumulate only a window of $w$ past gradients. Instead of actually storing $w$ past gradients, we will introduce a term $\gamma$ - generally set to a value around 0.9-  in a way that the running average $E\left[g^2\right]_t$ at time $t$ will be
+
+\begin{align*}
+    E\left[g^2\right]_t = \gamma E\left[g^2\right]_{t-1} + \left( 1 - \gamma \right) g^2_t
+\end{align*}
+
+where $g_t$ is the gradient at time $t$. Taking equation \ref{adagrad} we end up with
+
+\begin{align*} 
+    \Delta \theta_{t} = - \dfrac{\eta}{\sqrt{E\left[g^2\right]_t} + \epsilon} g_t = - \dfrac{\eta}{RMS \left[g\right]_t} g_t
+\end{align*}
+
+The learning rate will replaced by a $RMS$ over the the squared parameter updates as defined by 
+
+\begin{align*} 
+    E\left[\Delta \theta^2\right]_t = \gamma E\left[\Delta \theta^2\right]_{t-1} + \left( 1 - \gamma \right) \Delta \theta^2_t
+\end{align*}
+
+but since this cannot be evaluated at time $t$ we will take it at time $t-1$ to get the final form
+
+\begin{align*} 
+    \Delta \theta_{t} = - \dfrac{RMS \left[\Delta \theta \right]_{t-1}}{RMS \left[g\right]_t} g_t
+\end{align*}
+
+\section{RMSprop}
+
+RMSprop is an adaptive Learning rate method proposed by Geoff Hinton also trying to \textbf{fix the problem of Adagrad's radically diminishing learning rates}, dividing the learning rate by an exponentially decaying average of squared gradients too. \\ 
+
+Being $E[g^2]_t = \gamma \cdot E[g^2]_{t-1} + (1 - \gamma) \cdot g_t^2$, and knowing that Hinton suggests a $\gamma$ of $0.9$, we do the updates as follows:
+
+\begin{align*}
+    \theta_{t+1} = \theta_t - \dfrac{\eta}{\sqrt{E[g^2]_t} + \epsilon} \cdot g_t
+\end{align*}
+
+
+\section{Nesterov accelerated gradient - NAG}
+The NAG will adapt the Momentum method, by instead of using the gradient for the current $\theta$ it will estimate a future $\theta$ by using the current momentum. This will help to "slow down" the momentum if we are in a down slope and we are getting to its end. Thus, we have:
+
+\begin{align*}
+    v_t &= \gamma v_{t-1} + \eta \nabla_{\theta}J(\theta - \gamma v_{t-1}) \\
+    \theta_t &= \theta_{t-1} + v_t 
+\end{align*}
+
+\section{Adam}
+
+Standing for ADAptive Moment estimation, Adam is another method that computes adaptive learning rates for each parameter. 
+
+In addition to storing an exponentially decaying average of past squared gradients $v_t$, like Adadelta and RMSprop, Adam also keeps an exponentially decaying average of past gradients $m_t$, similar to momentum (refer to paper).
+
+We define $m_t$ (the first moment - the mean) and $v_t$ (the second moment - the variance) implicitly by the following equations:
+
+\begin{align*}
+    \hat{m_t} = \dfrac{m_t}{1-\beta_1} = \dfrac{\beta_1 m_{t-1} + (1-\beta_1)g_t}{1-\beta_1}
+    \\
+    \hat{v_t} = \dfrac{v_t}{1-\beta_2} = \dfrac{\beta_2 v_{t-1} + (1-\beta_2)g_t^2}{1-\beta_2}
+\end{align*}
+
+On which the divisions by $1-\beta_1$ and $1-\beta_2$ come to correct the biases towards zero, since $m_t$ and $v_t$ are initialized as vectors of 0's. This correction is important mainly when the decay rates are small ($\beta_1$ and $\beta_2$ close to 1).
+
+We then use $\hat{m_t}$ and $\hat{v_t}$ defined above to update the parameters as we have seen in Adadelta and RMSprop:
+
+\begin{align*}
+    \theta_{t+1} = \theta_t - \dfrac{\eta}{\sqrt{\hat{v_t}} + \epsilon} \cdot \hat{m_t}
+\end{align*}
+
+With suggested values of $0.9$ for $\beta_1$, $0.999$ for $\beta_2$ and $10^{-8}$ for $\epsilon$. 
+
+Analogy: whereas momentum can be seen as a ball running down a slope, Adam behaves like a heavy ball with friction, which thus prefers flat minima in the error surface.
+
+It is empirically shown that Adam works well in practice and compares favorably to other adaptive learning-method algorithms.
+
+
+
+
+\end{flushleft}
+
+\end{document}
