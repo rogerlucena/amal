@@ -1,3 +1,6 @@
 [submodule "TDs/1/report"]
 	path = TDs/1/report
 	url = https://git.overleaf.com/5d854057561fa7000120bded
+[submodule "gradient-descent-summary"]
+	path = gradient-descent-summary
+	url = https://git.overleaf.com/5d9cdec47432db0001bafc41
