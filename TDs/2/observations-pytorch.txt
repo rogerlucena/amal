@@ -1,0 +1,29 @@
+-- Observations - PyTorch
+
+y = x . w^t
+z = (y-ÿ)^2
+
+E.g.:
+	z.backward()
+	x.grad() -> grad of z w.r.t. x
+	y.grad() -> grad of z w.r.t. y
+	op = MyFunction.apply() -> saved into the context
+
+Partial derivatives w.r.t. intermediate variables (like y) are not stored for memory optimization issues
+	-> only derivatives w.r.t. the intial input variables are stored
+	-> to keep intermediate, you have to specify retain_grad() on it
+
+Graphe de calcul in PyTorch -> a DAG, no cycles, directed -> backpropagation to get the partial derivatives (gradients)
+	-> boolean requires_grad to start storing grads
+
+torch.no_grad() -> specify in a region that the grad is not necessary no be stored
+	-> oprtimization, runs faster
+	-> execution part of code, dealing only with test set for example 
+
+
+
+- PyTorch Tutorial: 
+https://pytorch.org/tutorials/beginner/deep_learning_60min_blitz.html
+
+- PyTorch Cheat sheet:
+https://pytorch.org/tutorials/beginner/ptcheat.html
