@@ -1,6 +1,5 @@
 Ideas for the project:
 
-
 - Towards Hierarchical Importance Attribution: Explaining Compositional Semantics for Neural Sequence Models
 https://openreview.net/forum?id=BkxRRkSKwr
 
