@@ -3,6 +3,13 @@ Ideas for the project:
 -- Towards Hierarchical Importance Attribution: Explaining Compositional Semantics for Neural Sequence Models
 https://openreview.net/forum?id=BkxRRkSKwr
 
+- Alternating Recurrent Dialog Model with Large-Scale Pre-Trained Language Models
+https://openreview.net/forum?id=HkeSdCEtDS
+
+- Plug and Play Language Model: A simple baseline for controlled language generation
+https://openreview.net/forum?id=H1edEyBKDS
+
+
 
 -- FreeLB: Enhanced Adversarial Training for Language Understanding
 https://openreview.net/forum?id=BygzbyHFvB
