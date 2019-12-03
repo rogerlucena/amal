@@ -1,9 +1,10 @@
 Ideas for the project:
 
-- Towards Hierarchical Importance Attribution: Explaining Compositional Semantics for Neural Sequence Models
+-- Towards Hierarchical Importance Attribution: Explaining Compositional Semantics for Neural Sequence Models
 https://openreview.net/forum?id=BkxRRkSKwr
 
-- FreeLB: Enhanced Adversarial Training for Language Understanding
+
+-- FreeLB: Enhanced Adversarial Training for Language Understanding
 https://openreview.net/forum?id=BygzbyHFvB
 
 - Incorporating BERT into Neural Machine Translation
@@ -12,7 +13,7 @@ https://openreview.net/forum?id=Hyl7ygStwB
 - TinyBERT: Distilling BERT for Natural Language Understanding
 https://openreview.net/forum?id=rJx0Q6EFPB
 
-- RoBERTa: A Robustly Optimized BERT Pretraining Approach
+-- RoBERTa: A Robustly Optimized BERT Pretraining Approach
 https://openreview.net/forum?id=SyxS0T4tvS
 
 - StructBERT: Incorporating Language Structures into Pre-training for Deep Language Understanding
