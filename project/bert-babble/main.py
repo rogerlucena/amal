@@ -150,7 +150,6 @@ def get_context_around(seed="countryside around her", window_size=10, samples=1)
     results = []
     for sent in bert_sents:
         detokenized = detokenize(sent)[1:-1]
-        print(detokenized)
         results.append([detokenized[0:window_size], detokenized[(window_size + len(seed_text)):]])
     return results
 
