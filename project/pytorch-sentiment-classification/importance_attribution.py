@@ -4,7 +4,7 @@ import numpy as np
 
 from lstm import LSTMSentiment
 from train_batch import load_sst
-from bert_babble.main import get_context_around
+# from bert_babble.main import get_context_around
 
 # -- SOC -- 
 # input "x" of size 53
@@ -16,8 +16,8 @@ from bert_babble.main import get_context_around
 # find on github a working CD (Contextual Decomposition)
 # apply sampling as in SOC 
 
-# def get_context_around(seed, window_size, n_samples = 1): # (n_samples, 2)
-#     return [[['the'] * 10] * 2] * n_samples
+def get_context_around(seed, window_size, n_samples = 1): # (n_samples, 2)
+    return [[['the'] * 10] * 2] * n_samples
 
 def get_valid_context_around(seed, window_size, n_samples, vocabulary):
     samples_needed = n_samples
