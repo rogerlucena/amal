@@ -4,6 +4,7 @@ import numpy as np
 
 from lstm import LSTMSentiment
 from train_batch import load_sst
+from bert_babble.main import get_context_around
 
 # -- SOC -- 
 # input "x" of size 53
@@ -15,8 +16,8 @@ from train_batch import load_sst
 # find on github a working CD (Contextual Decomposition)
 # apply sampling as in SOC 
 
-def get_context_around(seed, window_size, n_samples = 1): # (n_samples, 2)
-    return [[['the'] * 10] * 2] * n_samples
+# def get_context_around(seed, window_size, n_samples = 1): # (n_samples, 2)
+#     return [[['the'] * 10] * 2] * n_samples
 
 def get_valid_context_around(seed, window_size, n_samples, vocabulary):
     samples_needed = n_samples
@@ -62,7 +63,7 @@ def get_words_from_tensor(tensor, idx_to_word):
         idx = tensor[i]
         words.append(idx_to_word[idx])
 
-    return "".join(words)
+    return " ".join(words)
 
 # text is a torch tensor of size [53, 1821]
 def get_sampled_text(text, n_samples, start_phrase, end_phrase, window_size, text_field):
