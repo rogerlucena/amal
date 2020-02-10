@@ -25,9 +25,11 @@ pytorch-pretrained-bert==0.6.2
 regex==2019.11.1
 requests==2.22.0
 s3transfer==0.3.2
+sentencepiece==0.1.85
 six==1.13.0
 toml==0.10.0
 torch==1.4.0
+torchtext==0.5.0
 tqdm==4.42.1
 typed-ast==1.4.0
 urllib3==1.25.8

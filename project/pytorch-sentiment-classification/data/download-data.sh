@@ -14,7 +14,7 @@ cd SST2
 [ -f ./train.tsv ] || wget https://raw.githubusercontent.com/clairett/pytorch-sentiment-classification/master/data/SST2/train.tsv
 [ -f ./test.tsv ] || wget https://raw.githubusercontent.com/clairett/pytorch-sentiment-classification/master/data/SST2/test.tsv
 
-echo "Download and unzip the file inside the dara folder. Press any key to continue..."
+echo "Download and unzip the file inside the data folder. Press any key to continue..."
 read -n1
 
 URL="https://drive.google.com/uc?id=0B7XkCwpI5KDYNlNUTTlSS21pQmM&export=download"

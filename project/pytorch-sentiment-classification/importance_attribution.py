@@ -40,10 +40,10 @@ def get_valid_context_around(seed, window_size, n_samples, vocabulary):
 
 def get_scores_for_right_class(model, text, labels):
     preds = model(text)
-    print('labels:', labels)
-    print('preds.shape:', preds.shape)
+    # print('labels:', labels)
+    # print('preds.shape:', preds.shape)
     labels_01 = labels-1
-    print('labels_01:', labels_01.shape)
+    # print('labels_01:', labels_01.shape)
     scores = preds[range(0, preds.shape[0]), labels_01]
 
     print('scores.shape:', scores.shape)
@@ -135,7 +135,7 @@ if __name__ == '__main__':
         # print('type(text):', type(text))
         sampled_text = get_sampled_text(text, n_samples, start_phrase, end_phrase, window_size, text_field)
         sampled_labels = get_sampled_labels(labels, n_samples)
-        print('sampled_text.shape:', sampled_text.shape)
+        # print('sampled_text.shape:', sampled_text.shape)
 
         scores = get_scores_for_right_class(model, sampled_text, sampled_labels)
 
