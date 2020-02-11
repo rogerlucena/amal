@@ -155,7 +155,7 @@ if __name__ == '__main__':
     args.add_argument('--m', dest='model', default='lstm', help='specify the mode to use (default: lstm)')
     args = args.parse_args()
 
-    EPOCHS = 1 # 20
+    EPOCHS = 2 # 20
     USE_GPU = torch.cuda.is_available()
     EMBEDDING_DIM = 300
     HIDDEN_DIM = 150
@@ -175,7 +175,7 @@ if __name__ == '__main__':
                             use_gpu=USE_GPU, batch_size=BATCH_SIZE)
 
     print(model)
-    # model = torch.load('./data/modelLSTM.pt')
+    model = torch.load('./data/modelLSTM.pt')
 
     # if args.model == 'bilstm':
     #     model = BiLSTMSentiment(embedding_dim=EMBEDDING_DIM, hidden_dim=HIDDEN_DIM, vocab_size=len(text_field.vocab), label_size=len(label_field.vocab)-1,\

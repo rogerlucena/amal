@@ -38,7 +38,7 @@ class LSTMSentiment(nn.Module):
             self.hidden = self.init_hidden()
             self.hidden_already_set = True
         
-        print('x.shape:', x.shape)
+        # print('x.shape:', x.shape)
         lstm_out, self.hidden = self.lstm(x, self.hidden)
         y = self.hidden2label(lstm_out[-1])
         log_probs = F.log_softmax(y)

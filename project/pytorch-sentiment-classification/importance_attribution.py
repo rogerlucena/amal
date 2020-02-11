@@ -49,9 +49,9 @@ def get_scores_for_right_class(model, text, labels):
     print('scores.shape:', scores.shape)
     return scores # pred[label]
 
-def apply_padding(text):
+def apply_padding(text, start_phrase, end_phrase):
     text_padded = text.clone()
-    for i in range(45):
+    for i in range(start_phrase, end_phrase+1):
         text_padded[i] = torch.zeros(text_padded.shape[1])
 
     return text_padded
@@ -115,9 +115,9 @@ if __name__ == '__main__':
     BATCH_SIZE = 5
     text_field = data.Field(lower=True)
     label_field = data.Field(sequential=False)
-    n_samples = 1
-    start_phrase = 20
-    end_phrase = 35
+    n_samples = 0
+    start_phrase = 0 # 20
+    end_phrase = 26 # 35
     window_size = 10 # for each side around phrase
 
     # model = LSTMSentiment(embedding_dim=EMBEDDING_DIM, hidden_dim=HIDDEN_DIM, vocab_size=0, label_size=0,\
@@ -128,32 +128,42 @@ if __name__ == '__main__':
     train_iter, dev_iter, test_iter = load_sst(text_field, label_field, BATCH_SIZE)
 
     for batch in test_iter:
-        text = batch.text
-        labels = batch.label
+        original_text = batch.text
+        original_labels = batch.label
         # print('text.shape:', text.shape) # torch.Size([53, 1821])
 
+        text = original_text
+        labels = original_labels
+
         # print('type(text):', type(text))
-        sampled_text = get_sampled_text(text, n_samples, start_phrase, end_phrase, window_size, text_field)
-        sampled_labels = get_sampled_labels(labels, n_samples)
-        # print('sampled_text.shape:', sampled_text.shape)
 
-        scores = get_scores_for_right_class(model, sampled_text, sampled_labels)
+        if n_samples > 0:
+            text = get_sampled_text(original_text, n_samples, start_phrase, end_phrase, window_size, text_field)
+            labels = get_sampled_labels(original_labels, n_samples)
+            # print('text.shape:', text.shape)
 
-        padded_text = apply_padding(sampled_text)
-        scores_after_padding = get_scores_for_right_class(model, padded_text, sampled_labels)
+        scores = get_scores_for_right_class(model, text, labels)
 
-        # 0, 5, 10 ... = 5*i, i = 0 ... 1820 -> start of a new sampled block
+        padded_text = apply_padding(text, start_phrase, end_phrase)
+        scores_after_padding = get_scores_for_right_class(model, padded_text, labels)
+
+        # For example, in the case n_samples = 5
+        # 0, 5, 10 ... = 5*i, i = 0 ... 1820 -> start of a new sampled block (of size n_samples)
         # for the columns of the format 5*i+k, k = 0...4 -> "x" sampled
-        for i in range(int(text.shape[1]/n_samples)):
-            if i > 1:
+
+        # In the case n_samples = 0 every column will be the start of a block (of size 1, only one "x")
+        block_size = n_samples if n_samples > 0 else 1
+
+        for i in range(int(text.shape[1]/block_size)):
+            if i > 3:
                 break
             
             ii = i
             differences = []
 
-            for ii  in range(i, i+n_samples):
-                x = sampled_text[:, ii]
-                label = sampled_labels[ii]
+            for ii in range(i, i+block_size):
+                x = text[:, ii]
+                label = labels[ii]
 
                 for pos in range(len(x)):
                     word_embedded = x[pos].item()
@@ -162,6 +172,7 @@ if __name__ == '__main__':
                     # print('word_to_idx[" "]:', word_to_idx[" "])
                     print(pos, '', idx_to_word[word_embedded])
 
+                print('label:', label.item()) # 1 is positive, 2 is negative
                 print('scores[ii]:', scores[ii].item())
                 print('scores_after_padding[ii]:', scores_after_padding[ii].item())
 
@@ -172,27 +183,7 @@ if __name__ == '__main__':
                 #get_scores(model, x, label)
 
             mean_difference = np.array(differences).mean()
-            print(i, '- mean_difference:', mean_difference)
-
-            # pretrained_embeddings = np.random.uniform(-0.25, 0.25, (len(text_field.vocab), 300))
-            # pretrained_embeddings[0] = 0
-            # word2vec = load_bin_vec('./data/GoogleNews-vectors-negative300.bin', word_to_idx)
-            # for word, vector in word2vec.items():
-            #     pretrained_embeddings[word_to_idx[word]-1] = vector
-
-    
-            # print('len(x):', len(x))
-
-            # start = int (0.2 * size)
-            # end = int (0.7 * size)
-
-            # p = x # x[start:end]
-
-            # print('x:', x)
-            # print('p:', p)
-            # print('type(x)', type(x))
-
-            # print('x[0].shape:', x[0].shape) # torch.Size([53, 1821])
-            # print('x[1].shape:', x[1].shape) # torch.Size([1821])
+            print(i, ') mean_difference:', mean_difference)
+            print()
 
 
