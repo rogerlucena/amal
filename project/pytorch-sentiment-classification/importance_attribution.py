@@ -6,19 +6,18 @@ from lstm import LSTMSentiment
 from train_batch import load_sst
 # from bert_babble.main import get_context_around
 
-# -- SOC -- 
-# input "x" of size 53
-# p = x[20:35]
+# -- SOC (Sampling and OCclusion) algorithm -- 
+#  - Parameters below following the paper's notation:
+# Input "x" of size 53
+# p = x[20:35] (the phrase which importance we want to analyze)
 # context = x[10:19] et x[35:44] for sampling
-# compute the differences on the scores and take the medium of them! =D
+# Compute the differences on the scores (positive or negative) and take the medium of them for the number of samples taken!
 
-# -- SCD --
-# find on github a working CD (Contextual Decomposition)
-# apply sampling as in SOC 
-
+# Signature of the function used to sample the context (that will be imported from "bert_babble.main")
 def get_context_around(seed, window_size, n_samples = 1): # (n_samples, 2)
     return [[['the'] * 10] * 2] * n_samples
 
+# Wrapper of "get_context_around" taking into account the compatibility between the dictionaries from "bert_babble" and the one used here
 def get_valid_context_around(seed, window_size, n_samples, vocabulary):
     samples_needed = n_samples
     context = [[""] * 2] * n_samples
@@ -38,6 +37,7 @@ def get_valid_context_around(seed, window_size, n_samples, vocabulary):
 
     return context
 
+# Generate the model predictions and get the score attributed to the label that should be the correct one
 def get_scores_for_right_class(model, text, labels):
     preds = model(text)
     # print('labels:', labels)
@@ -49,6 +49,7 @@ def get_scores_for_right_class(model, text, labels):
     print('scores.shape:', scores.shape)
     return scores # pred[label]
 
+# Apply padding (SOC algorithm)
 def apply_padding(text, start_phrase, end_phrase):
     text_padded = text.clone()
     for i in range(start_phrase, end_phrase+1):
@@ -56,7 +57,7 @@ def apply_padding(text, start_phrase, end_phrase):
 
     return text_padded
 
-# return a single string with the words
+# Return a single string with the words
 def get_words_from_tensor(tensor, idx_to_word):
     words = []
     for i in range(tensor.shape[0]):
@@ -65,7 +66,8 @@ def get_words_from_tensor(tensor, idx_to_word):
 
     return " ".join(words)
 
-# text is a torch tensor of size [53, 1821]
+# Generate the samples for the context of each phrase "p" in each input "x" (columns of "text") and return the "sampled_text"
+# original "text" is a torch tensor of size [53, 1821]
 def get_sampled_text(text, n_samples, start_phrase, end_phrase, window_size, text_field):
     sampled_text = torch.zeros(text.shape[0], 1, dtype=torch.long)
     for i in range(text.shape[1]):
@@ -98,6 +100,7 @@ def get_sampled_text(text, n_samples, start_phrase, end_phrase, window_size, tex
     sampled_text = sampled_text[:, 1:]
     return sampled_text
 
+# Generated the corresponding labels for "sampled_text"
 def get_sampled_labels(labels, n_samples):
     sampled_labels = torch.zeros(labels.shape[0]*n_samples, dtype=torch.long)
     
@@ -107,8 +110,8 @@ def get_sampled_labels(labels, n_samples):
     
     return sampled_labels
 
+# Main function for the SOC algorithm below:
 if __name__ == '__main__':
-
     # USE_GPU = torch.cuda.is_available()
     # EMBEDDING_DIM = 300
     # HIDDEN_DIM = 150
@@ -118,11 +121,10 @@ if __name__ == '__main__':
     n_samples = 0
     start_phrase = 0 # 20
     end_phrase = 26 # 35
-    window_size = 10 # for each side around phrase
+    window_size = 10 # for each side around the phrase
 
     # model = LSTMSentiment(embedding_dim=EMBEDDING_DIM, hidden_dim=HIDDEN_DIM, vocab_size=0, label_size=0,\
     #                       use_gpu=USE_GPU, batch_size=BATCH_SIZE)
-
     model = torch.load('./data/modelLSTM.pt')
 
     train_iter, dev_iter, test_iter = load_sst(text_field, label_field, BATCH_SIZE)
@@ -155,8 +157,8 @@ if __name__ == '__main__':
         block_size = n_samples if n_samples > 0 else 1
 
         for i in range(int(text.shape[1]/block_size)):
-            if i > 3:
-                break
+            if i > 0: 
+                break # stop after the first example 
             
             ii = i
             differences = []
@@ -172,7 +174,7 @@ if __name__ == '__main__':
                     # print('word_to_idx[" "]:', word_to_idx[" "])
                     print(pos, '', idx_to_word[word_embedded])
 
-                print('label:', label.item()) # 1 is positive, 2 is negative
+                print('label (1 is positive, 2 is negative):', label.item()) # 1 is positive, 2 is negative
                 print('scores[ii]:', scores[ii].item())
                 print('scores_after_padding[ii]:', scores_after_padding[ii].item())
 
@@ -183,7 +185,8 @@ if __name__ == '__main__':
                 #get_scores(model, x, label)
 
             mean_difference = np.array(differences).mean()
-            print(i, ') mean_difference:', mean_difference)
+            print(i, ') mean_difference:', mean_difference) # measure of the importance of the phrase "p" (expected to always 
+                                                            # be positive as it is already the score contribution to the correct label)
             print()
 
 
