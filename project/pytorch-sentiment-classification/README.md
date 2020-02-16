@@ -4,7 +4,7 @@
 
 Code adapted from <https://github.com/clairett/pytorch-sentiment-classification> (LSTM and CNN sentiment analysis in PyTorch - trained on Stanford Sentiment Treebank (SST2)).
 
-The file `importance_attribution.py` is the core of the work for this project. It used a model trained after running the `train_batch.py` script.
+The file `importance_attribution.py` is the core of the work for this project (run it using `python3` for example). It used a model trained through the `train_batch.py` script.
 
 As the authors of the paper suggested, we foccused on the implementation of the SOC (Sampling and OCclusion) algorithm.
 

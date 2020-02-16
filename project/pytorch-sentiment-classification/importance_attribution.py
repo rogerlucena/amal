@@ -6,12 +6,13 @@ from lstm import LSTMSentiment
 from train_batch import load_sst
 # from bert_babble.main import get_context_around
 
-# -- SOC (Sampling and OCclusion) algorithm -- 
+# -- SOC (Sampling and OCclusion) algorithm
 #  - Parameters below following the paper's notation:
-# Input "x" of size 53
-# p = x[20:35] (the phrase which importance we want to analyze)
-# context = x[10:19] et x[35:44] for sampling
-# Compute the differences on the scores (positive or negative) and take the medium of them for the number of samples taken!
+    # Input "x" of size 53
+    # p = x[20:35] (the phrase which importance we want to analyze)
+    # context = x[10:19] et x[35:44] for sampling
+# Importance attribution: compute the differences on the scores (for positive or negative labelling) before and
+# after padding, do that for every sample and them take the medium to compute the phrase importance
 
 # Signature of the function used to sample the context (that will be imported from "bert_babble.main")
 def get_context_around(seed, window_size, n_samples = 1): # (n_samples, 2)
@@ -46,7 +47,7 @@ def get_scores_for_right_class(model, text, labels):
     # print('labels_01:', labels_01.shape)
     scores = preds[range(0, preds.shape[0]), labels_01]
 
-    print('scores.shape:', scores.shape)
+    # print('scores.shape:', scores.shape)
     return scores # pred[label]
 
 # Apply padding (SOC algorithm)
@@ -158,7 +159,7 @@ if __name__ == '__main__':
 
         for i in range(int(text.shape[1]/block_size)):
             if i > 0: 
-                break # stop after the first example 
+                break # stop after the first example (getting just one result for qualitative analysis)
             
             ii = i
             differences = []
@@ -167,6 +168,8 @@ if __name__ == '__main__':
                 x = text[:, ii]
                 label = labels[ii]
 
+                print()
+                print('Input "x" considered:')
                 for pos in range(len(x)):
                     word_embedded = x[pos].item()
                     idx_to_word = text_field.vocab.itos
@@ -175,6 +178,7 @@ if __name__ == '__main__':
                     print(pos, '', idx_to_word[word_embedded])
 
                 print('label (1 is positive, 2 is negative):', label.item()) # 1 is positive, 2 is negative
+                print('Phrase "p" from position', start_phrase, 'to', end_phrase)
                 print('scores[ii]:', scores[ii].item())
                 print('scores_after_padding[ii]:', scores_after_padding[ii].item())
 
@@ -185,8 +189,11 @@ if __name__ == '__main__':
                 #get_scores(model, x, label)
 
             mean_difference = np.array(differences).mean()
-            print(i, ') mean_difference:', mean_difference) # measure of the importance of the phrase "p" (expected to always 
-                                                            # be positive as it is already the score contribution to the correct label)
+            
+            # "mean_difference" measures the importance of the phrase "p" (expected to always 
+            # be positive as it is already the score contribution to the correct label)
+            print(i, ') mean_difference (phrase importance): ', mean_difference, sep='') 
+
             print()
 
 
