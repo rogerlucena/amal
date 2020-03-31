@@ -5,7 +5,7 @@ absl-py==0.8.0
 astroid==2.3.1
 attrs==19.1.0
 backcall==0.1.0
-bleach==3.1.0
+bleach==3.1.4
 cycler==0.10.0
 datamaestro==0.2.5
 datamaestro-image==0.1
